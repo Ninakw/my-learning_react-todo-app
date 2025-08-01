@@ -36,3 +36,197 @@
     transform: rotate(360deg);
   }
 }
+
+:root {
+  --main-color: #75f6ea;
+  --main-text-color: #6c6c6c;
+}
+.deleted-text {
+  text-decoration: line-through;
+}
+
+.main {
+  color: var(--main-text-color);
+}
+
+.header {
+  background: var(--main-color);
+  margin-top: 0;
+  height: 100px;
+}
+
+.titile {
+  margin: 0 0;
+  color: #fdf8de;
+}
+
+li {
+  color: var(--main-text-color);
+}
+
+.all-task-area {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+.current-task-title {
+  margin: 0;
+  color: var(--main-color);
+  text-align: left;
+  margin-left: 15px;
+}
+
+.new-task-title {
+  color: #ffff;
+  margin: 0;
+  text-align: left;
+  margin-left: 15px;
+}
+
+.current-task-area {
+  width: 49%;
+}
+
+.new-task-area {
+  background-color: var(--main-color);
+  width: 49%;
+  height: 500px;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.new-task-inner-area {
+  background-color: #ffff;
+  margin: 0 auto;
+  text-align: left;
+  width: 80%;
+  border-radius: 10px;
+}
+
+.del-btn {
+  display: inline;
+  background-color: #d8d8d8;
+  padding: 10px;
+  margin: 5px;
+  border: none;
+  color: #ffff;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.del-btn:hover {
+  display: inline;
+  background-color: #ffabab;
+  padding: 10px;
+  margin: 5px;
+  border: none;
+  color: #ffff;
+  border-radius: 10px;
+  font-weight: bold;
+}
+.main-btn {
+  background-color: var(--main-color);
+  padding: 10px;
+  margin: 5px;
+  border: none;
+  color: #ffff;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.second-btn {
+  background-color: #f8efbd;
+  padding: 10px;
+  margin: 5px;
+  border: none;
+  color: #ffff;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.new-task-form {
+  margin: 0 0;
+  margin-left: 10px;
+  width: 80%;
+}
+
+.input-text {
+  padding: 10px;
+  margin: 0 0;
+  margin-left: 10px;
+  border: #7af4e8 solid 2px;
+  border-radius: 15px;
+  outline: none;
+}
+
+.input-due-date-input {
+  padding: 10px;
+  margin: 5px;
+  background-color: #ffff;
+  border: #7af4e8 solid 2px;
+  color: #7af4e8;
+  border-radius: 10px;
+  font-size: 100%;
+  outline: none;
+}
+
+.input-due-date-input:hover {
+  background-color: #7af4e8;
+  border: #7af4e8 solid 2px;
+  color: #ffff;
+}
+
+.input-due-date-input-selected {
+  background-color: #7af4e8;
+  border: #7af4e8 solid 2px;
+  color: #ffff;
+}
+
+.current-text {
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  color: var(--main-text-color);
+  transition: border 0.2s ease;
+}
+.current-text:focus {
+  border: none;
+  box-shadow: 0 0 0 2px rgb(122, 244, 232);
+}
+
+.chk-box {
+  accent-color: var(--main-color);
+}
+
+.beside-button-p {
+  display: inline-block;
+}
+
+.inpute-category-add {
+  display: inline-block;
+  border-radius: 50%;
+  border: 2px;
+  background-color: var(--main-color);
+  color: #ffff;
+}
+
+.inpute-category-add:hover {
+  background-color: #76e0d5;
+  color: #ffff;
+}
+main {
+  width: 90%;
+  margin: auto;
+}
+
+p {
+  margin: 5px;
+}
+
+li {
+  list-style-type: none;
+}
+
+span {
+  display: block;
+}
