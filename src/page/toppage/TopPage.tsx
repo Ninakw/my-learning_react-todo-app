@@ -6,6 +6,7 @@ import { Todo, category } from "./type";
 import { propertyList } from "./const";
 import Radio from "../../component/Radio";
 import localforage from "localforage";
+import { Tooltip } from "react-tooltip";
 
 function TopPage() {
   const [text, setText] = useState("");
@@ -182,7 +183,22 @@ function TopPage() {
             <ul>
               {todos.map((todo) => {
                 return (
-                  <li key={todo.id}>
+                  <li
+                    key={todo.id}
+                    data-tooltip-id="my-tooltip"
+                    data-tooltip-html={`
+                    <div>Category</div>
+                    <p>
+                    ${
+                      todo.category
+                        ?.filter((ctg) => ctg.checked)
+                        .map((ctg) => ctg.name)
+                        .join("<br>") ?? ""
+                    }</p>
+                    <div>Priority</div>
+                    <p>${todo.priority}</p>
+                  `}
+                  >
                     <input
                       type="checkbox"
                       className="chk-box"
@@ -205,14 +221,6 @@ function TopPage() {
                         }}
                       />
                     )}
-                    {/* {todo.category
-                      ?.filter((ctg) => {
-                        return ctg.checked === true;
-                      })
-                      .map((filtered) => {
-                        return <li key={filtered.id}>{filtered.name}</li>;
-                      })} */}
-                    {/* <p>{todo.priority}</p> */}
 
                     <button
                       className="del-btn"
@@ -225,6 +233,13 @@ function TopPage() {
                   </li>
                 );
               })}
+              <Tooltip
+                id="my-tooltip"
+                variant="success"
+                place="right"
+                offset={-370}
+                className="tooltip"
+              />
             </ul>
           </div>
           <div className="new-task-area">
@@ -286,12 +301,16 @@ function TopPage() {
                           type="checkbox"
                           value={category.name}
                           className="category-chk-box"
+                          id={category.name}
                           checked={category.checked}
                           onChange={() => {
                             handleCheckCategory(category.id, !category.checked);
                           }}
                         />
-                        <label className="category-chk-box">
+                        <label
+                          htmlFor={category.name}
+                          className="category-chk-box"
+                        >
                           {category.name}
                         </label>
                       </li>

@@ -214,6 +214,20 @@ li {
   background-color: #76e0d5;
   color: #ffff;
 }
+
+.tooltip {
+  background-color: #7af4e8;
+  opacity: 1;
+  font-weight: bold;
+}
+
+.tooltip p {
+  font-weight: 400;
+}
+
+.tooltip div {
+  font-weight: bold;
+}
 main {
   width: 90%;
   margin: auto;
