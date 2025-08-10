@@ -20,3 +20,5 @@ export type LabelandValue = {
   label: string;
   value: string;
 };
+
+export type Filter = "all" | "checked" | "unchecked" | "removed";

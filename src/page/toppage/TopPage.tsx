@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import "../../App.css";
 import Header from "../../component/Header";
 import CategoryModal from "../../component/modal/CategoryModal";
-import { Todo, category } from "./type";
+import { Filter, Todo, category } from "./type";
 import { propertyList } from "./const";
 import Radio from "../../component/Radio";
 import localforage from "localforage";
@@ -23,6 +23,9 @@ function TopPage() {
 
   // モーダルの開閉
   const [isOpen, setIsOpen] = useState(false);
+
+  //フィルターのステート
+  const [filter, setFilter] = useState<Filter>("all");
 
   //タスク追加関数
   const handleSubmit = () => {
@@ -96,7 +99,7 @@ function TopPage() {
 
   //期限日選択時
   const handleDueDate = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDate((date) => {
+    setDate(() => {
       return e.target.value;
     });
   };
@@ -136,6 +139,35 @@ function TopPage() {
     });
   };
 
+  // フィルターセレクト選択関数
+  const handleFilter = (filter: Filter) => {
+    setFilter(filter);
+  };
+
+  // 削除済みタスクを完全削除
+  const handleRemovedTask = () => {
+    setTodos((todos) => {
+      return todos.filter((todo) => {
+        return !todo.removed;
+      });
+    });
+  };
+  // フィルター選択関数
+  const filteredTodos = todos.filter((todo) => {
+    switch (filter) {
+      case "all":
+        return !todo.removed;
+      case "checked":
+        return todo.checked && !todo.removed;
+      case "unchecked":
+        return !todo.checked && !todo.removed;
+      case "removed":
+        return todo.removed;
+      default:
+        return todo;
+    }
+  });
+
   // 優先度ラジオボタン押下関数
   const handlePriorityRadio = (property: string) => {
     setPriority(property);
@@ -148,7 +180,6 @@ function TopPage() {
     localforage.getItem("category-react").then((categoryValue) => {
       setCategories(categoryValue as category[]);
     });
-
     setDate(() => {
       const today = new Date()
         .toLocaleDateString("ja-JP", {
@@ -180,8 +211,34 @@ function TopPage() {
         <div className="all-task-area">
           <div className="current-task-area">
             <h4 className="current-task-title">Current Task</h4>
+            <div className="horizontal-contents">
+              <select
+                className="fliter-select"
+                value={filter}
+                onChange={(e) => handleFilter(e.target.value as Filter)}
+              >
+                <option value="all">ALL TASK</option>
+                <option value="checked">DONE TASK</option>
+                <option value="unchecked">UNDONE TASK</option>
+                <option value="removed">DELETED TASK</option>
+              </select>
+              {filter === "removed" && (
+                <button
+                  className="trush-button"
+                  onClick={() => {
+                    console.log("pushed");
+                    handleRemovedTask();
+                  }}
+                  disabled={
+                    todos.filter((todo) => {
+                      return !todo.removed;
+                    }).length === 0
+                  }
+                ></button>
+              )}
+            </div>
             <ul>
-              {todos.map((todo) => {
+              {filteredTodos.map((todo) => {
                 return (
                   <li
                     key={todo.id}
@@ -237,7 +294,7 @@ function TopPage() {
                 id="my-tooltip"
                 variant="success"
                 place="right"
-                offset={-370}
+                offset={-120}
                 className="tooltip"
               />
             </ul>
@@ -257,17 +314,24 @@ function TopPage() {
                 <input
                   type="text"
                   className="input-text"
+                  disabled={filter === "checked" || filter === "removed"}
                   value={text}
                   onChange={(e) => {
                     handleChange(e);
                   }}
                 />
-                <input type="submit" className="second-btn" value="ADD!" />
+                <input
+                  type="submit"
+                  className="second-btn"
+                  disabled={filter === "checked" || filter === "removed"}
+                  value="ADD!"
+                />
                 <p>due date</p>
                 <span />
                 <input
                   type="date"
                   className="input-due-date-input"
+                  disabled={filter === "checked" || filter === "removed"}
                   value={date}
                   onChange={(e) => {
                     handleDueDate(e);
