@@ -44,7 +44,11 @@ const CategoryModal = ({
     setText("");
   };
   return (
-    <Modal isOpen={isOpen}>
+    <Modal
+      isOpen={isOpen}
+      className="large-modal"
+      overlayClassName="modal-overlay"
+    >
       <Header title="ADD Category" />
       <form>
         <input

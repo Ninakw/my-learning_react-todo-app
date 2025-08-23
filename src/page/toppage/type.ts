@@ -3,6 +3,8 @@ export type Todo = {
   value: string;
   checked: boolean;
   removed: boolean;
+  due_date?: string;
+  due_time?: string;
   category?: category[];
   priority?: string;
 };
@@ -14,6 +16,8 @@ export type category = {
 };
 
 export type priorityLevel = "high" | "middle" | "low";
+
+export type sortKey = "VALUE" | "DATE" | "PRIORITY";
 
 export type LabelandValue = {
   id: number;

@@ -6,7 +6,7 @@ import { Filter, Todo, category } from "./type";
 import { propertyList } from "./const";
 import Radio from "../../component/Radio";
 import localforage from "localforage";
-import { Tooltip } from "react-tooltip";
+import { parse } from "date-fns";
 
 function TopPage() {
   const [text, setText] = useState("");
@@ -30,11 +30,26 @@ function TopPage() {
   //タスク追加関数
   const handleSubmit = () => {
     if (!text) return;
+    // 期限日相関チェック
+    let validatedDate = date;
+    if (!date && time) {
+      validatedDate = new Date()
+        .toLocaleDateString("ja-JP", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })
+        .split("/")
+        .join("-");
+    }
+
     const newTodo: Todo = {
       id: new Date().getTime(),
       value: text,
       checked: false,
       removed: false,
+      due_date: validatedDate,
+      due_time: time,
       category: categories,
       priority: priority,
     };
@@ -42,6 +57,8 @@ function TopPage() {
 
     //フォームクリア
     setText("");
+    setDate("");
+    setTime("");
     setCategories((categories) => {
       const clearedCategories = categories.map((category) => {
         return { ...category, checked: false };
@@ -106,7 +123,7 @@ function TopPage() {
 
   //期限時間取得時
   const handleDueTime = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTime((time) => {
+    setTime(() => {
       return e.target.value;
     });
   };
@@ -173,6 +190,87 @@ function TopPage() {
     setPriority(property);
   };
 
+  // // ソート関数
+  const handleSort = () => {
+    console.log("handleSort 呼び出し");
+    setTodos((todos) => {
+      const sortedTodos = [...todos];
+
+      sortedTodos.sort((a, b) => {
+        return a.value.localeCompare(b.value, "ja");
+      });
+
+      return sortedTodos;
+    });
+  };
+
+  // // ソート関数（Due）
+  const handleSortByDue = () => {
+    console.log("sort by date");
+    setTodos(() => {
+      const formatDate = "yyyy-MM-dd";
+      const formatTime = "yyyy-MM-dd HH:mm";
+      const sortedTodos = [...todos];
+      sortedTodos.sort((a, b) => {
+        const aHasDate = !!(a.due_date !== "");
+        console.log(`${a.value} ${aHasDate}`);
+
+        const bHasDate = !!(b.due_date !== "");
+
+        console.log(`${b.value} ${bHasDate}`);
+
+        if (!(aHasDate || bHasDate)) {
+          console.log("NO Date");
+          return 0;
+        } else if (aHasDate != bHasDate) {
+          console.log("one of two has date");
+          return aHasDate ? -1 : 1;
+        } else {
+          console.log("two of two have date");
+          // 両方日付指定ありの場合、日付の大きさで比較
+          const aDateStr = parse(`${a.due_date}`, formatDate, new Date());
+          const bDateStr = parse(`${b.due_date}`, formatDate, new Date());
+          console.log(`aDateStr${aDateStr}`);
+          console.log(`bDateStr${bDateStr}`);
+
+          // 日付の大小比較
+          if (aDateStr < bDateStr) {
+            return -1;
+          } else if (aDateStr > bDateStr) {
+            return 1;
+          } else {
+            // 両方とも同日の場合、時刻で比較
+            // a,bの日付有無
+            const aHasTime = !!a.due_time;
+            const bHasTime = !!b.due_time;
+            if (!(aHasTime || bHasTime)) {
+              // 両方時刻なしの場合、ソートなし
+              return 0;
+            } else if (aHasTime != bHasTime) {
+              // 片方だけ時刻ありの場合、ある方を前へ
+              return aHasTime ? -1 : 1;
+            } else {
+              // 両方時刻ありの場合、時刻の大きさで比較
+              const aTimeStr = parse(
+                `${a.due_date} ${a.due_time}`,
+                formatTime,
+                new Date()
+              );
+              const bTimeStr = parse(
+                `${b.due_date} ${b.due_time}`,
+                formatTime,
+                new Date()
+              );
+              console.log(`aTimeStr : ${aTimeStr}, bTimeStr : ${bTimeStr}`);
+              return aTimeStr.getTime() - bTimeStr.getTime();
+            }
+          }
+        }
+      });
+      return sortedTodos;
+    });
+  };
+
   useEffect(() => {
     localforage.getItem("todo-react").then((todoValue) => {
       setTodos(todoValue as Todo[]);
@@ -180,19 +278,6 @@ function TopPage() {
     localforage.getItem("category-react").then((categoryValue) => {
       setCategories(categoryValue as category[]);
     });
-    setDate(() => {
-      const today = new Date()
-        .toLocaleDateString("ja-JP", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-        })
-        .split("/")
-        .join("-");
-
-      return today;
-    });
-    console.log(date);
   }, []);
 
   // 永続化
@@ -226,78 +311,112 @@ function TopPage() {
                 <button
                   className="trush-button"
                   onClick={() => {
-                    console.log("pushed");
                     handleRemovedTask();
                   }}
                   disabled={
                     todos.filter((todo) => {
-                      return !todo.removed;
+                      return todo.removed;
                     }).length === 0
                   }
                 ></button>
               )}
             </div>
-            <ul>
-              {filteredTodos.map((todo) => {
-                return (
-                  <li
-                    key={todo.id}
-                    data-tooltip-id="my-tooltip"
-                    data-tooltip-html={`
-                    <div>Category</div>
-                    <p>
-                    ${
-                      todo.category
-                        ?.filter((ctg) => ctg.checked)
-                        .map((ctg) => ctg.name)
-                        .join("<br>") ?? ""
-                    }</p>
-                    <div>Priority</div>
-                    <p>${todo.priority}</p>
-                  `}
-                  >
-                    <input
-                      type="checkbox"
-                      className="chk-box"
-                      disabled={todo.removed}
-                      checked={todo.checked}
-                      onChange={() => {
-                        handleCheck(todo.id, !todo.checked);
-                      }}
-                    />
-                    {todo.checked ? (
-                      <s>{todo.value}</s>
-                    ) : (
-                      <input
-                        type="text"
-                        className="current-text"
-                        disabled={todo.checked || todo.removed}
-                        value={todo.value}
-                        onChange={(e) => {
-                          handleEdit(todo.id, e.target.value);
-                        }}
-                      />
-                    )}
 
+            <table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>
                     <button
-                      className="del-btn"
+                      className="th-filter-btn"
                       onClick={() => {
-                        handleDelete(todo.id, !todo.removed);
+                        handleSort();
                       }}
                     >
-                      {todo.removed ? "復元" : "削除"}
+                      タスク
                     </button>
-                  </li>
-                );
-              })}
-              <Tooltip
-                id="my-tooltip"
-                variant="success"
-                place="right"
-                offset={-120}
-                className="tooltip"
-              />
-            </ul>
+                  </th>
+                  <th>
+                    <button
+                      className="th-filter-btn"
+                      onClick={() => {
+                        handleSortByDue();
+                      }}
+                    >
+                      due
+                    </button>
+                  </th>
+                  <th>
+                    <button className="th-filter-btn">priority</button>
+                  </th>
+                  <th>
+                    <button className="th-filter-btn">category</button>
+                  </th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredTodos.map((todo) => {
+                  return (
+                    <tr key={todo.id}>
+                      <td>
+                        <input
+                          type="checkbox"
+                          className="chk-box"
+                          disabled={todo.removed}
+                          checked={todo.checked}
+                          onChange={() => {
+                            handleCheck(todo.id, !todo.checked);
+                          }}
+                        />
+                      </td>
+                      <td>
+                        {todo.checked ? (
+                          <s>{todo.value}</s>
+                        ) : (
+                          <input
+                            type="text"
+                            className="current-text"
+                            disabled={todo.checked || todo.removed}
+                            value={todo.value}
+                            onChange={(e) => {
+                              handleEdit(todo.id, e.target.value);
+                            }}
+                          />
+                        )}
+                      </td>
+                      <td id="td_due">
+                        {todo.due_date} {todo?.due_time}
+                      </td>
+                      <td className="td-center">{todo.priority}</td>
+                      <td>
+                        {todo.category
+                          ?.filter((c) => {
+                            return c.checked === true;
+                          })
+                          .map((c) => {
+                            return <span key={c.id}>{c.name}</span>;
+                          })}
+                      </td>
+                      <td className="td-center">
+                        <button
+                          className="del-btn"
+                          onClick={() => {
+                            handleDelete(todo.id, !todo.removed);
+                          }}
+                        >
+                          {todo.removed ? "復元" : "削除"}
+                        </button>
+                      </td>
+                      <td className="td-center">
+                        <button className="edit-btn">編集</button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
           <div className="new-task-area">
             <h4 className="new-task-title">New Task</h4>
@@ -354,7 +473,6 @@ function TopPage() {
                   value="+"
                   onClick={() => {
                     handleOpenCategory();
-                    console.log(isOpen);
                   }}
                 />
                 <ul>
@@ -396,12 +514,14 @@ function TopPage() {
           </div>
         </div>
       </main>
+      {/* <div className="modal-container"> */}
       <CategoryModal
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         categories={categories}
         setCategories={handleAddCategory}
       ></CategoryModal>
+      {/* </div> */}
     </div>
   );
 }
