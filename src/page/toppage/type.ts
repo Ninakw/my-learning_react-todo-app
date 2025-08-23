@@ -6,7 +6,7 @@ export type Todo = {
   due_date?: string;
   due_time?: string;
   category?: category[];
-  priority?: string;
+  priority: string;
 };
 
 export type category = {

@@ -1,18 +1,18 @@
 import { LabelandValue } from "./type";
-export const propertyList: LabelandValue[] = [
+export const priorityList: LabelandValue[] = [
   {
     id: 1,
     label: "high",
-    value: "high",
+    value: "0",
   },
   {
     id: 2,
     label: "middle",
-    value: "middle",
+    value: "1",
   },
   {
     id: 3,
     label: "low",
-    value: "low",
+    value: "2",
   },
 ];

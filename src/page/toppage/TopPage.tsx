@@ -3,7 +3,7 @@ import "../../App.css";
 import Header from "../../component/Header";
 import CategoryModal from "../../component/modal/CategoryModal";
 import { Filter, Todo, category } from "./type";
-import { propertyList } from "./const";
+import { priorityList } from "./const";
 import Radio from "../../component/Radio";
 import localforage from "localforage";
 import { parse } from "date-fns";
@@ -19,7 +19,7 @@ function TopPage() {
   //カテゴリーのステート
   const [categories, setCategories] = useState<category[]>([]);
   //優先度のステート
-  const [priority, setPriority] = useState<string>("high");
+  const [priority, setPriority] = useState<string>("0");
 
   // モーダルの開閉
   const [isOpen, setIsOpen] = useState(false);
@@ -140,7 +140,6 @@ function TopPage() {
     setIsOpen(() => {
       return true;
     });
-    console.log(isOpen);
   };
 
   // カテゴリーチェックボックス選択関数
@@ -186,13 +185,12 @@ function TopPage() {
   });
 
   // 優先度ラジオボタン押下関数
-  const handlePriorityRadio = (property: string) => {
-    setPriority(property);
+  const handlePriorityRadio = (priority: string) => {
+    setPriority(priority);
   };
 
   // // ソート関数
   const handleSort = () => {
-    console.log("handleSort 呼び出し");
     setTodos((todos) => {
       const sortedTodos = [...todos];
 
@@ -204,35 +202,25 @@ function TopPage() {
     });
   };
 
-  // // ソート関数（Due）
+  // ソート関数（Due）
   const handleSortByDue = () => {
-    console.log("sort by date");
     setTodos(() => {
       const formatDate = "yyyy-MM-dd";
       const formatTime = "yyyy-MM-dd HH:mm";
       const sortedTodos = [...todos];
       sortedTodos.sort((a, b) => {
         const aHasDate = !!(a.due_date !== "");
-        console.log(`${a.value} ${aHasDate}`);
 
         const bHasDate = !!(b.due_date !== "");
 
-        console.log(`${b.value} ${bHasDate}`);
-
         if (!(aHasDate || bHasDate)) {
-          console.log("NO Date");
           return 0;
         } else if (aHasDate != bHasDate) {
-          console.log("one of two has date");
           return aHasDate ? -1 : 1;
         } else {
-          console.log("two of two have date");
           // 両方日付指定ありの場合、日付の大きさで比較
           const aDateStr = parse(`${a.due_date}`, formatDate, new Date());
           const bDateStr = parse(`${b.due_date}`, formatDate, new Date());
-          console.log(`aDateStr${aDateStr}`);
-          console.log(`bDateStr${bDateStr}`);
-
           // 日付の大小比較
           if (aDateStr < bDateStr) {
             return -1;
@@ -261,12 +249,27 @@ function TopPage() {
                 formatTime,
                 new Date()
               );
-              console.log(`aTimeStr : ${aTimeStr}, bTimeStr : ${bTimeStr}`);
               return aTimeStr.getTime() - bTimeStr.getTime();
             }
           }
         }
       });
+      return sortedTodos;
+    });
+  };
+
+  // ソート関数（priority）
+  const handleSortByPriority = () => {
+    setTodos((todos) => {
+      const sortedTodos = [...todos];
+
+      sortedTodos.sort((a, b) => {
+        return a.priority.localeCompare(b.priority, undefined, {
+          numeric: true,
+          sensitivity: "base",
+        });
+      });
+
       return sortedTodos;
     });
   };
@@ -347,7 +350,14 @@ function TopPage() {
                     </button>
                   </th>
                   <th>
-                    <button className="th-filter-btn">priority</button>
+                    <button
+                      className="th-filter-btn"
+                      onClick={() => {
+                        handleSortByPriority();
+                      }}
+                    >
+                      priority
+                    </button>
                   </th>
                   <th>
                     <button className="th-filter-btn">category</button>
@@ -389,7 +399,13 @@ function TopPage() {
                       <td id="td_due">
                         {todo.due_date} {todo?.due_time}
                       </td>
-                      <td className="td-center">{todo.priority}</td>
+                      <td className="td-center">
+                        {
+                          priorityList.find(
+                            (item) => item.value === todo.priority
+                          )?.label
+                        }
+                      </td>
                       <td>
                         {todo.category
                           ?.filter((c) => {
@@ -504,7 +520,7 @@ function TopPage() {
                 <Radio
                   radioName={"property-radio"}
                   checkedValue={priority}
-                  labelAndValueArray={propertyList}
+                  labelAndValueArray={priorityList}
                   onChangeFunction={(selectedValue) => {
                     handlePriorityRadio(selectedValue);
                   }}
