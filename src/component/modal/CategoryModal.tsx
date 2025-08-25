@@ -36,11 +36,6 @@ const CategoryModal = ({
     const newCategories = [...categories, newCategory];
 
     setCategories(newCategories);
-    console.log(
-      `category: ${categories.map((category) => {
-        console.log(category.name);
-      })}`
-    );
     setText("");
   };
   return (

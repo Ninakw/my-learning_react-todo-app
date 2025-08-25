@@ -13,6 +13,7 @@ export type category = {
   readonly id: number;
   name: string;
   checked?: boolean;
+  filterChecked?: boolean;
 };
 
 export type priorityLevel = "high" | "middle" | "low";

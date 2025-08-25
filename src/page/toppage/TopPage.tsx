@@ -8,6 +8,8 @@ import Radio from "../../component/Radio";
 import localforage from "localforage";
 import { parse } from "date-fns";
 
+import CategoryFilterModal from "../../component/modal/CategoryFilterModal";
+
 function TopPage() {
   const [text, setText] = useState("");
   // Stateの定義に<>を使用すると、<>内以外の型の値が入らなくなるので安全。
@@ -24,7 +26,13 @@ function TopPage() {
   // モーダルの開閉
   const [isOpen, setIsOpen] = useState(false);
 
-  //フィルターのステート
+  // フィルターモーダルの開閉
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  // フィルターモーダル上で選択されたカテゴリーのステート
+  const [filterCategories, setFilterCategories] = useState<string[]>([]);
+
+  // フィルターのステート
   const [filter, setFilter] = useState<Filter>("all");
 
   //タスク追加関数
@@ -142,6 +150,12 @@ function TopPage() {
     });
   };
 
+  const handleOpenCategoryFilter = () => {
+    setIsFilterOpen(() => {
+      return true;
+    });
+  };
+
   // カテゴリーチェックボックス選択関数
   const handleCheckCategory = (id: number, checked: boolean) => {
     setCategories((categories) => {
@@ -158,6 +172,7 @@ function TopPage() {
   // フィルターセレクト選択関数
   const handleFilter = (filter: Filter) => {
     setFilter(filter);
+    console.log(filterCategories);
   };
 
   // 削除済みタスクを完全削除
@@ -184,6 +199,18 @@ function TopPage() {
     }
   });
 
+  const categoryFilteredTodo = filteredTodos.filter((todo) => {
+    if (!Array.isArray(todo.category) || todo.category.length === 0) {
+      return false;
+    }
+    console.log(todo.category);
+    return todo.category
+      .filter((c) => {
+        return c.checked;
+      })
+      .some((c) => filterCategories.includes(c.name));
+  });
+
   // 優先度ラジオボタン押下関数
   const handlePriorityRadio = (priority: string) => {
     setPriority(priority);
@@ -204,6 +231,7 @@ function TopPage() {
 
   // ソート関数（Due）
   const handleSortByDue = () => {
+    console.log(filterCategories);
     setTodos(() => {
       const formatDate = "yyyy-MM-dd";
       const formatTime = "yyyy-MM-dd HH:mm";
@@ -275,6 +303,7 @@ function TopPage() {
   };
 
   useEffect(() => {
+    console.log(filterCategories);
     localforage.getItem("todo-react").then((todoValue) => {
       setTodos(todoValue as Todo[]);
     });
@@ -360,14 +389,24 @@ function TopPage() {
                     </button>
                   </th>
                   <th>
-                    <button className="th-filter-btn">category</button>
+                    <button
+                      className="th-filter-btn"
+                      onClick={() => {
+                        handleOpenCategoryFilter();
+                      }}
+                    >
+                      category
+                    </button>
                   </th>
                   <th></th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
-                {filteredTodos.map((todo) => {
+                {(filterCategories.length === 0
+                  ? filteredTodos
+                  : categoryFilteredTodo
+                ).map((todo) => {
                   return (
                     <tr key={todo.id}>
                       <td>
@@ -537,6 +576,13 @@ function TopPage() {
         categories={categories}
         setCategories={handleAddCategory}
       ></CategoryModal>
+      <CategoryFilterModal
+        isOpen={isFilterOpen}
+        setIsOpen={setIsFilterOpen}
+        categories={categories}
+        setCategories={setCategories}
+        setFilterCategories={setFilterCategories}
+      ></CategoryFilterModal>
       {/* </div> */}
     </div>
   );
