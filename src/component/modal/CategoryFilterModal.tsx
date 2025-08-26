@@ -23,7 +23,6 @@ const CategoryFilterModal = ({
   //チェックボックス選択関数
   const handleCheckCategory = useCallback(
     (id: number, filterChecked: boolean) => {
-      console.log("in func");
       console.log(filterChecked);
       setCategories((category) => {
         const selectCategory = category.map((category) => {

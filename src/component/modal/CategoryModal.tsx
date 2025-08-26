@@ -4,6 +4,7 @@ import { category } from "../../page/toppage/type";
 import { useState } from "react";
 import React from "react";
 import Header from "../Header";
+import { useCategoryForm } from "../../hooks/useCategoryForm";
 
 type CategoryModalProps = {
   isOpen: boolean;
@@ -15,18 +16,16 @@ type CategoryModalProps = {
 const CategoryModal = ({
   isOpen,
   setIsOpen,
+
   categories,
   setCategories,
 }: CategoryModalProps) => {
-  const [text, setText] = useState("");
-
-  //テキスト入力時関数
-  const handleAddCategory = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setText(e.target.value);
-  };
+  const { text, handleAddCategory, validate, clear, errors } =
+    useCategoryForm(categories);
 
   //カテゴリー追加関数
   const handleSubmitCategory = () => {
+    if (!validate()) return;
     const newCategory: category = {
       id: categories.length + 1,
       name: text,
@@ -36,7 +35,8 @@ const CategoryModal = ({
     const newCategories = [...categories, newCategory];
 
     setCategories(newCategories);
-    setText("");
+    clear();
+    setIsOpen(false);
   };
   return (
     <Modal
@@ -68,10 +68,12 @@ const CategoryModal = ({
           className="main-btn"
           onClick={() =>
             setIsOpen(() => {
+              clear();
               return false;
             })
           }
         />
+        {errors.name && <p className="error">{errors.name}</p>}
       </form>
       <ul>
         {categories.map((category) => {

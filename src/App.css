@@ -281,20 +281,6 @@ li {
   color: #ffff;
 }
 
-.tooltip {
-  background-color: #7af4e8;
-  opacity: 1;
-  font-weight: bold;
-}
-
-.tooltip p {
-  font-weight: 400;
-}
-
-.tooltip div {
-  font-weight: bold;
-}
-
 .modal-overlay {
   position: fixed; /* 画面全体を覆うように */
   top: 0;
@@ -326,6 +312,11 @@ li {
   margin: 0 auto;
 }
 
+.error {
+  font-size: 12px;
+  color: #ffa892;
+  font-weight: bold;
+}
 main {
   width: 90%;
   margin: auto;
