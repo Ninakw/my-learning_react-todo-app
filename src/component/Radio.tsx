@@ -3,8 +3,7 @@ type RadioProps = {
   radioName: string;
   checkedValue: string;
   labelAndValueArray: LabelandValue[];
-  inputClassName?: string;
-  labelClassName?: string;
+
   onChangeFunction: (str: string) => void;
 };
 
@@ -18,8 +17,6 @@ const Radio = ({
   radioName,
   checkedValue,
   labelAndValueArray,
-  inputClassName,
-  labelClassName,
   onChangeFunction,
 }: RadioProps) => {
   // ラジオボタン押下関数
@@ -32,15 +29,17 @@ const Radio = ({
       {labelAndValueArray.map((item) => {
         return (
           <React.Fragment key={item.id}>
-            <input
-              type="radio"
-              name={radioName}
-              value={item.value}
-              onChange={handleRadio}
-              checked={checkedValue === item.value}
-              className={inputClassName}
-            />
-            <label className={labelClassName}>{item.label}</label>
+            <label>
+              <input
+                type="radio"
+                name={radioName}
+                value={item.value}
+                onChange={handleRadio}
+                checked={checkedValue === item.value}
+                className="radio-input"
+              />
+              <span className="input-label">{item.label}</span>
+            </label>
           </React.Fragment>
         );
       })}

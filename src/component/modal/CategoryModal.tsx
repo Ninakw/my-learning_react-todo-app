@@ -1,7 +1,6 @@
 import Modal from "react-modal";
 import "../../App.css";
 import { category } from "../../page/toppage/type";
-import { useState } from "react";
 import React from "react";
 import Header from "../Header";
 import { useCategoryForm } from "../../hooks/useCategoryForm";
@@ -16,7 +15,6 @@ type CategoryModalProps = {
 const CategoryModal = ({
   isOpen,
   setIsOpen,
-
   categories,
   setCategories,
 }: CategoryModalProps) => {

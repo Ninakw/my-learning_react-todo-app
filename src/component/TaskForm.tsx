@@ -1,18 +1,23 @@
 import React from "react";
-import { category } from "../page/toppage/type";
+import { category, Filter, Todo } from "../page/toppage/type";
 import { priorityList } from "../page/toppage/const";
 
 import Radio from "./Radio";
+import { useTaskForm } from "../hooks/useTaskForm";
+import { useTodo } from "../hooks/useTodo";
 
-type Props = {
+type TaskFormProps = {
   text: string;
   date: string;
   time: string;
   priority: string;
   categories: category[];
   errors?: { [key: string]: string };
-  disabled?: boolean;
-
+  filter: Filter;
+  validateForm: () => boolean;
+  addTodo: (todo: Todo) => void;
+  clearForm: () => void;
+  clearFormCategory: () => void;
   onTextChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDateChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onTimeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -21,76 +26,137 @@ type Props = {
   onOpenCategoryModal?: () => void;
 };
 
-const TaskForm: React.FC<Props> = ({
+const TaskForm = ({
   text,
   date,
   time,
   priority,
   categories,
   errors = {},
-  disabled = false,
+  filter,
+  validateForm,
+  addTodo,
+  clearForm,
+  clearFormCategory,
   onTextChange,
   onDateChange,
   onTimeChange,
   onPriorityChange,
   onCategoryCheck,
   onOpenCategoryModal,
-}) => {
+}: TaskFormProps) => {
+  const handleSubmit = () => {
+    if (!validateForm()) return;
+    // 期限日相関チェック
+    let validatedDate = date;
+    if (!date && time) {
+      validatedDate = new Date()
+        .toLocaleDateString("ja-JP", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })
+        .split("/")
+        .join("-");
+    }
+
+    const newTodo: Todo = {
+      id: new Date().getTime(),
+      value: text,
+      checked: false,
+      removed: false,
+      due_date: validatedDate,
+      due_time: time,
+      category: categories,
+      priority: priority,
+    };
+
+    addTodo(newTodo);
+    //フォームクリア
+    clearForm();
+    clearFormCategory();
+  };
   return (
-    <div className="task-form-container">
-      <p>task</p>
-      <input
-        type="text"
-        value={text}
-        onChange={onTextChange}
-        disabled={disabled}
-      />
-      {errors.text && <p className="error">{errors.text}</p>}
-
-      <p>due date</p>
-      <input
-        type="date"
-        value={date}
-        onChange={onDateChange}
-        disabled={disabled}
-      />
-      <input
-        type="time"
-        value={time}
-        step={900}
-        onChange={onTimeChange}
-        disabled={disabled}
-      />
-      {errors.date && <p className="error">{errors.date}</p>}
-
-      <p>category</p>
-      <input
-        type="button"
-        value="+"
-        onClick={onOpenCategoryModal}
-        disabled={disabled}
-      />
-      <ul>
-        {categories.map((c) => (
-          <li key={c.id}>
-            <input
-              type="checkbox"
-              checked={c.checked}
-              onChange={() => onCategoryCheck(c.id, !c.checked)}
-              disabled={disabled}
-            />
-            <label>{c.name}</label>
-          </li>
-        ))}
-      </ul>
-
-      <p>priority</p>
-      <Radio
-        radioName="priority-radio"
-        checkedValue={priority}
-        labelAndValueArray={priorityList}
-        onChangeFunction={onPriorityChange}
-      />
+    <div className="new-task-inner-area">
+      <form
+        className="new-task-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
+        }}
+      >
+        <p>task</p>
+        <span />
+        <input
+          type="text"
+          className="input-text"
+          disabled={filter === "checked" || filter === "removed"}
+          value={text}
+          onChange={onTextChange}
+        />
+        <input
+          type="submit"
+          className="second-btn"
+          disabled={filter === "checked" || filter === "removed"}
+          value="ADD!"
+        />
+        {errors.text && <p className="error">{errors.text}</p>}
+        <p>due date</p>
+        <span />
+        <input
+          type="date"
+          className="input-due-date-input"
+          disabled={filter === "checked" || filter === "removed"}
+          value={date}
+          onChange={onDateChange}
+        />{" "}
+        <input
+          type="time"
+          className="input-due-date-input"
+          step={900}
+          value={time}
+          onChange={onTimeChange}
+        />
+        <span />
+        <p className="beside-button-p">category</p>
+        <input
+          type="button"
+          className="inpute-category-add"
+          value="+"
+          onClick={() => {
+            onOpenCategoryModal?.();
+          }}
+        />
+        <ul className="category-chk-box">
+          {categories.map((category) => {
+            return (
+              <li className="" key={category.id}>
+                <label htmlFor={category.name} className="category-chk-box">
+                  <input
+                    type="checkbox"
+                    value={category.name}
+                    className="category-chk-box"
+                    id={category.name}
+                    checked={category.checked}
+                    onChange={() => {
+                      onCategoryCheck(category.id, !category.checked);
+                    }}
+                  />
+                  <span className="input-label">{category.name}</span>
+                </label>
+              </li>
+            );
+          })}
+        </ul>
+        <p className="beside-button-p">priority</p>
+        <span />
+        <Radio
+          radioName={"property-radio"}
+          checkedValue={priority}
+          labelAndValueArray={priorityList}
+          onChangeFunction={onPriorityChange}
+        ></Radio>
+      </form>
     </div>
   );
 };

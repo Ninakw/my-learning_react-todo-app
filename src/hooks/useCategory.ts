@@ -44,7 +44,7 @@ export function useCategory() {
 
   return {
     categories,
-    setCategories: updateCategories, // 外部から明示的に上書きしたいとき用
+    setCategories: updateCategories,
     checkCategory,
     isOpen,
     setIsOpen,

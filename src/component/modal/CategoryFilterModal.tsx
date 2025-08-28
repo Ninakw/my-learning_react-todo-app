@@ -1,7 +1,7 @@
 import Modal from "react-modal";
 import "../../App.css";
 import { category } from "../../page/toppage/type";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import React from "react";
 import Header from "../Header";
 
@@ -23,11 +23,9 @@ const CategoryFilterModal = ({
   //チェックボックス選択関数
   const handleCheckCategory = useCallback(
     (id: number, filterChecked: boolean) => {
-      console.log(filterChecked);
       setCategories((category) => {
         const selectCategory = category.map((category) => {
           if (id === category.id) {
-            console.log(category);
             return { ...category, filterChecked: filterChecked };
           }
           return category;
@@ -35,12 +33,11 @@ const CategoryFilterModal = ({
         return selectCategory;
       });
     },
-    [categories]
+    [setCategories]
   );
 
   // フィルターボタン押下時関数
   const handleSubmitCategory = () => {
-    console.log(categories);
     setIsOpen(false);
 
     setFilterCategories(() => {
@@ -69,11 +66,10 @@ const CategoryFilterModal = ({
               <input
                 type="checkbox"
                 value={category.name}
-                className="category-chk-box"
+                className="category-chk-box-modal"
                 id={category.name}
                 checked={category.filterChecked}
                 onChange={() => {
-                  console.log("clicked");
                   handleCheckCategory(category.id, !category.filterChecked);
                 }}
               />

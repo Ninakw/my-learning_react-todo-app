@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { category } from "../page/toppage/type"; // 型定義に応じて調整
+import { category } from "../page/toppage/type";
 
 type Errors = {
   name?: string;

@@ -1,14 +1,14 @@
 import "../../App.css";
 import Header from "../../component/Header";
 import CategoryModal from "../../component/modal/CategoryModal";
-import { Filter, Todo, category } from "./type";
+import { Filter } from "./type";
 import { priorityList } from "./const";
-import Radio from "../../component/Radio";
 import { useTodo } from "../../hooks/useTodo";
 import { useTaskForm } from "../../hooks/useTaskForm";
 import CategoryFilterModal from "../../component/modal/CategoryFilterModal";
 import { useCategory } from "../../hooks/useCategory";
 import { useCallback, useMemo } from "react";
+import TaskForm from "../../component/TaskForm";
 
 function TopPage() {
   const {
@@ -53,39 +53,6 @@ function TopPage() {
     validateForm,
     errors,
   } = useTaskForm();
-
-  //タスク追加関数
-  const handleSubmit = () => {
-    if (!validateForm()) return;
-    // 期限日相関チェック
-    let validatedDate = date;
-    if (!date && time) {
-      validatedDate = new Date()
-        .toLocaleDateString("ja-JP", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-        })
-        .split("/")
-        .join("-");
-    }
-
-    const newTodo: Todo = {
-      id: new Date().getTime(),
-      value: text,
-      checked: false,
-      removed: false,
-      due_date: validatedDate,
-      due_time: time,
-      category: categories,
-      priority: priority,
-    };
-
-    addTodo(newTodo);
-    //フォームクリア
-    clearForm();
-    clearFormCategory();
-  };
 
   // カテゴリー追加モーダルを開く関数
   const handleOpenCategory = useCallback(() => {
@@ -147,7 +114,7 @@ function TopPage() {
                         sortByName();
                       }}
                     >
-                      タスク
+                      task
                     </button>
                   </th>
                   <th>
@@ -181,7 +148,6 @@ function TopPage() {
                     </button>
                   </th>
                   <th></th>
-                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -191,7 +157,7 @@ function TopPage() {
                       <td>
                         <input
                           type="checkbox"
-                          className="chk-box"
+                          className="todo-chk-box"
                           disabled={todo.removed}
                           checked={todo.checked}
                           onChange={() => {
@@ -243,9 +209,6 @@ function TopPage() {
                           {todo.removed ? "復元" : "削除"}
                         </button>
                       </td>
-                      <td className="td-center">
-                        <button className="edit-btn">編集</button>
-                      </td>
                     </tr>
                   );
                 })}
@@ -254,90 +217,25 @@ function TopPage() {
           </div>
           <div className="new-task-area">
             <h4 className="new-task-title">New Task</h4>
-            <div className="new-task-inner-area">
-              <form
-                className="new-task-form"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleSubmit();
-                }}
-              >
-                <p>task</p>
-                <span />
-                <input
-                  type="text"
-                  className="input-text"
-                  disabled={filter === "checked" || filter === "removed"}
-                  value={text}
-                  onChange={handleTextChange}
-                />
-                <input
-                  type="submit"
-                  className="second-btn"
-                  disabled={filter === "checked" || filter === "removed"}
-                  value="ADD!"
-                />
-                {errors.text && <p className="error">{errors.text}</p>}
-                <p>due date</p>
-                <span />
-                <input
-                  type="date"
-                  className="input-due-date-input"
-                  disabled={filter === "checked" || filter === "removed"}
-                  value={date}
-                  onChange={handleDateChange}
-                />{" "}
-                <input
-                  type="time"
-                  className="input-due-date-input"
-                  step={900}
-                  value={time}
-                  onChange={handleTimeChange}
-                />
-                <span />
-                <p className="beside-button-p">category</p>
-                <input
-                  type="button"
-                  className="inpute-category-add"
-                  value="+"
-                  onClick={() => {
-                    handleOpenCategory();
-                  }}
-                />
-                <ul>
-                  {categories.map((category) => {
-                    return (
-                      <li key={category.id}>
-                        <input
-                          type="checkbox"
-                          value={category.name}
-                          className="category-chk-box"
-                          id={category.name}
-                          checked={category.checked}
-                          onChange={() => {
-                            checkCategory(category.id, !category.checked);
-                          }}
-                        />
-                        <label
-                          htmlFor={category.name}
-                          className="category-chk-box"
-                        >
-                          {category.name}
-                        </label>
-                      </li>
-                    );
-                  })}
-                </ul>
-                <p className="beside-button-p">priority</p>
-                <span />
-                <Radio
-                  radioName={"property-radio"}
-                  checkedValue={priority}
-                  labelAndValueArray={priorityList}
-                  onChangeFunction={handlePriorityChange}
-                ></Radio>
-              </form>
-            </div>
+            <TaskForm
+              text={text}
+              date={date}
+              time={time}
+              priority={priority}
+              categories={categories}
+              errors={errors}
+              filter={filter}
+              validateForm={validateForm}
+              addTodo={addTodo}
+              clearForm={clearForm}
+              clearFormCategory={clearFormCategory}
+              onTextChange={handleTextChange}
+              onDateChange={handleDateChange}
+              onTimeChange={handleTimeChange}
+              onPriorityChange={handlePriorityChange}
+              onCategoryCheck={checkCategory}
+              onOpenCategoryModal={handleOpenCategory}
+            />
           </div>
         </div>
       </main>

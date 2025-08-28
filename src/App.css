@@ -40,6 +40,7 @@
 :root {
   --main-color: #75f6ea;
   --main-text-color: #6c6c6c;
+  --input-part-color: #7af4e8;
 }
 .deleted-text {
   text-decoration: line-through;
@@ -47,6 +48,7 @@
 
 .main {
   color: var(--main-text-color);
+  padding-bottom: 10px;
 }
 
 .header {
@@ -68,6 +70,7 @@ li {
 
 .all-task-area {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
   margin-top: 20px;
 }
@@ -91,8 +94,8 @@ li {
 
 .new-task-area {
   background-color: var(--main-color);
+  padding-bottom: 20px;
   width: 49%;
-  height: 500px;
   text-align: center;
   border-radius: 10px;
 }
@@ -103,6 +106,7 @@ li {
   text-align: left;
   width: 80%;
   border-radius: 10px;
+  padding: 10px;
 }
 
 .del-btn {
@@ -209,7 +213,7 @@ li {
   padding: 10px;
   margin: 0 0;
   margin-left: 10px;
-  border: #7af4e8 solid 2px;
+  border: var(--input-part-color) solid 2px;
   border-radius: 15px;
   outline: none;
 }
@@ -218,7 +222,7 @@ li {
   padding: 0;
   margin: 0 0;
   margin-left: 15px;
-  border: #7af4e8 solid 2px;
+  border: solid 2px var(--input-part-color);
   border-radius: 15px;
   outline: none;
   color: #6c6c6c;
@@ -228,8 +232,8 @@ li {
   padding: 10px;
   margin: 5px;
   background-color: #ffff;
-  border: #7af4e8 solid 2px;
-  color: #7af4e8;
+  border: var(--input-part-color) solid 2px;
+  color: var(--input-part-color);
   border-radius: 10px;
   font-size: 100%;
   outline: none;
@@ -237,14 +241,14 @@ li {
 }
 
 .input-due-date-input:hover {
-  background-color: #7af4e8;
-  border: #7af4e8 solid 2px;
+  background-color: var(--input-part-color);
+  border: solid 2px var(--input-part-color);
   color: #ffff;
 }
 
 .input-due-date-input-selected {
-  background-color: #7af4e8;
-  border: #7af4e8 solid 2px;
+  background-color: var(--input-part-color);
+  border: solid 2px var(--input-part-color);
   color: #ffff;
 }
 
@@ -262,6 +266,43 @@ li {
 
 .chk-box {
   accent-color: var(--main-color);
+}
+
+ul.category-chk-box {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+input.category-chk-box {
+  display: none;
+}
+
+span.input-label {
+  display: inline-block;
+  color: var(--main-color);
+  font-size: 14px;
+  border: 2px solid var(--input-part-color);
+  border-radius: 20px;
+  margin: 5px 5px;
+  padding: 5px 20px;
+}
+
+input.category-chk-box:checked + span.input-label {
+  color: #fff;
+  background: var(--input-part-color);
+  border: 1px solid var(--input-part-color);
+}
+
+.radio-input {
+  display: none;
+}
+
+.radio-input:checked + span.input-label {
+  color: #fff;
+  background: var(--input-part-color);
+  border: 1px solid var(--input-part-color);
 }
 
 .beside-button-p {
@@ -282,12 +323,12 @@ li {
 }
 
 .modal-overlay {
-  position: fixed; /* 画面全体を覆うように */
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* 半透明の黒背景 */
+  background-color: rgba(0, 0, 0, 0.5);
   z-index: 1000;
 }
 
