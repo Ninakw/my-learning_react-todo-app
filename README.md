@@ -5,8 +5,7 @@
 React,TypeScriptを使用して作成しています。
 
 # DEMO
-
-"hoge"の魅力が直感的に伝えわるデモ動画や図解を載せる
+![Image](https://github.com/user-attachments/assets/0ea49f31-d1e4-46d0-bc4d-103588d0aeca)
 
 # Features
 
@@ -15,26 +14,5 @@ Todo追加、削除、ソート（タスク名、期限日時、優先度で昇�
 
 # Requirement
 
-"hoge"を動かすのに必要なライブラリなどを列挙する
-
-* huga 3.5.2
-* hogehuga 1.0.2
-
-# Installation
-
-Requirementで列挙したライブラリなどのインストール方法を説明する
-
-```bash
-pip install huga_package
-```
-
-# Usage
-
-DEMOの実行方法など、"hoge"の基本的な使い方を説明する
-
-```bash
-git clone https://github.com/hoge/~
-cd examples
-python demo.py
-```
-
+* macOS
+* react 16.3.0
